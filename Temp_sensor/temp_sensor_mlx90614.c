@@ -1,6 +1,6 @@
 /*Reference : https://olegkutkov.me/2017/08/10/mlx90614-raspberry/
 *
-*
+* Modified as per requirement by Karthik BR
 */
 
 #include <sys/ioctl.h>

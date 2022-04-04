@@ -16,8 +16,8 @@
 #define I2C_DEV_PATH   ("/dev/i2c-1")
 #define INTERVAL       (3000000)
 #define DEVICE_ADDRESS (0x5A)
-#define ROOM_TEMP      (0x06)
-#define OBJECT_TEMP    (0x07)
+#define ROOM_TEMP      (0x06)     // To sense room temperature
+#define OBJECT_TEMP    (0x07)     // To sense object temperature
 
 
 #ifndef I2C_SMBUS_READ 
@@ -57,6 +57,7 @@ int main()
 
     // trying to read something from the device unsing SMBus READ request
     i2c_data data;
+	
     char command = ROOM_TEMP; // command 0x06 is reading thermopile sensor, 0x07 is for reading IR sensor
 
     // build request structure

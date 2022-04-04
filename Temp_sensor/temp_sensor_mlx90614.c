@@ -33,7 +33,7 @@ int main()
     int fdev = open(I2C_DEV_PATH, O_RDWR); // open i2c bus
 
     if (fdev < 0) 
-	{
+    {
         fprintf(stderr, "Failed to open I2C interface %s Error: %s\n", I2C_DEV_PATH, strerror(errno));
         return -1;
     }
@@ -42,14 +42,14 @@ int main()
 
     // set slave device address, default MLX is 0x5A
     if (ioctl(fdev, I2C_SLAVE, i2c_addr) < 0) 
-	{
+    {
         fprintf(stderr, "Failed to select I2C slave device! Error: %s\n", strerror(errno));
         return -1;
     }
 
     // enable checksums control
     if (ioctl(fdev, I2C_PEC, 1) < 0) 
-	{
+    {
         fprintf(stderr, "Failed to enable SMBus packet error checking, error: %s\n", strerror(errno));
         return -1;
     }
@@ -62,15 +62,15 @@ int main()
 
     // build request structure
     struct i2c_smbus_ioctl_data sdat = 
-	{
+    {
         .read_write = I2C_SMBUS_READ,
         .command = command,
         .size = I2C_SMBUS_WORD_DATA,
         .data = &data
     };
 	
-	while(1)
-	{
+    while(1)
+    {
 		
         // do actual request
         if (ioctl(fdev, I2C_SMBUS, &sdat) < 0) 
@@ -86,9 +86,9 @@ int main()
         
         // print result
         printf("Room Temperature = %04.2f\n", temp);
-		usleep(INTERVAL);
+	usleep(INTERVAL);
 	
-	}
+    }
 
     return 0;
 }

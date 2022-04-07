@@ -11,7 +11,7 @@ endif
 all: helloWorld
 .DEFAULT_GOAL := helloWorld
 
-aesdsocket: helloWorld.c
+helloWorld: helloWorld.c
 	$(CC) $(CFLAGS) $^ -o $@ $(INCLUDES) $(LDFLAGS)
 
 clean:

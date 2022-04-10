@@ -1,6 +1,8 @@
 /*Reference : https://olegkutkov.me/2017/08/10/mlx90614-raspberry/
 *
 * Modified as per requirement by Karthik BR
+*
+* Version 2 : added opening of file to log temperature values - Ananth Deshpande
 */
 
 #include <sys/ioctl.h>
@@ -12,6 +14,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <linux/i2c-dev.h>
+#include <linux/i2c.h>
 
 #define I2C_DEV_PATH   ("/dev/i2c-1")
 #define INTERVAL       (3000000)
@@ -30,6 +33,16 @@
 typedef union i2c_smbus_data i2c_data;
 int main()
 {
+    char strBuf[100]; // for sprintf usage below
+
+    int fd = open("/var/tmp/sensorLog.txt", O_RDWR|O_CREAT|O_APPEND, 0644);
+
+    if(fd < 0)
+    {
+       printf("Failed to open sensorLog file: errno %d\n", errno);
+       return -1;// there is no point proceeding ahead from here, thus return -1
+    }
+
     int fdev = open(I2C_DEV_PATH, O_RDWR); // open i2c bus
 
     if (fdev < 0) 
@@ -86,8 +99,17 @@ int main()
         
         // print result
         printf("Room Temperature = %04.2f\n", temp);
+        int sprintfRetVal = sprintf(strBuf, "Room temperature = %04.2f\n", temp);
+
+        int retVal = write(fd, strBuf, sprintfRetVal);
+
+	if(retVal < 0)
+	{
+	   printf("file write failed\n");
+	   return -1;
+	}
+
 	usleep(INTERVAL);
-	
     }
 
     return 0;

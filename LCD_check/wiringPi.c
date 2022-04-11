@@ -9,7 +9,7 @@
  *	the clock section /grr/mutter/
  ***********************************************************************
  * This file is part of wiringPi:
- *    https://github.com/WiringPi/WiringPi
+ *	https://projects.drogon.net/raspberry-pi/wiringpi/
  *
  *    wiringPi is free software: you can redistribute it and/or modify
  *    it under the terms of the GNU Lesser General Public License as
@@ -71,11 +71,13 @@
 #include <sys/ioctl.h>
 #include <asm/ioctl.h>
 
-#include "softPwm.h"
-#include "softTone.h"
+//#include "softPwm.h"
+//#include "softTone.h"
 
 #include "wiringPi.h"
-#include "../version.h"
+//#include "../version.h"
+//#include "/home/midhun/Desktop/aesd/final-project-midhun9/buildroot/output/host/arm-buildroot-linux-uclibcgnueabihf/sysroot/usr/include/linux/version.h"
+
 
 // Environment Variables
 
@@ -239,7 +241,7 @@ const char *piModelNames [21] =
   "Unknown15",	// 15
   "CM3+",	// 16
   "Pi 4B",	// 17
-  "Pi Zero2-W",	// 18
+  "Unknown18",	// 18
   "Pi 400",	// 19
   "CM4",	// 20
 } ;
@@ -664,7 +666,7 @@ int wiringPiFailure (int fatal, const char *message, ...)
   if (!fatal && wiringPiReturnCodes)
     return -1 ;
 
-  va_start (argp, message) ;
+  //va_start (argp, message) ;
     vsnprintf (buffer, 1023, message, argp) ;
   va_end (argp) ;
 
@@ -785,7 +787,7 @@ int piGpioLayout (void)
     fprintf (stderr, "Unable to determine hardware version. I see: %s,\n", line) ;
     fprintf (stderr, " - expecting BCM2708, BCM2709 or BCM2835.\n") ;
     fprintf (stderr, "If this is a genuine Raspberry Pi then please report this\n") ;
-    fprintf (stderr, "at GitHub.com/wiringPi/wiringPi. If this is not a Raspberry Pi then you\n") ;
+    fprintf (stderr, "to projects@drogon.net. If this is not a Raspberry Pi then you\n") ;
     fprintf (stderr, "are on your own as wiringPi is designed to support the\n") ;
     fprintf (stderr, "Raspberry Pi ONLY.\n") ;
     exit (EXIT_FAILURE) ;
@@ -1444,8 +1446,8 @@ void pinMode (int pin, int mode)
     else if (wiringPiMode != WPI_MODE_GPIO)
       return ;
 
-    softPwmStop  (origPin) ;
-    softToneStop (origPin) ;
+    //softPwmStop  (origPin) ;
+    //softToneStop (origPin) ;
 
     fSel    = gpioToGPFSEL [pin] ;
     shift   = gpioToShift  [pin] ;
@@ -1454,14 +1456,14 @@ void pinMode (int pin, int mode)
       *(gpio + fSel) = (*(gpio + fSel) & ~(7 << shift)) ; // Sets bits to zero = input
     else if (mode == OUTPUT)
       *(gpio + fSel) = (*(gpio + fSel) & ~(7 << shift)) | (1 << shift) ;
-    else if (mode == SOFT_PWM_OUTPUT)
-      softPwmCreate (origPin, 0, 100) ;
-    else if (mode == SOFT_TONE_OUTPUT)
-      softToneCreate (origPin) ;
+    //else if (mode == SOFT_PWM_OUTPUT)
+      //softPwmCreate (origPin, 0, 100) ;
+    //else if (mode == SOFT_TONE_OUTPUT)
+      //softToneCreate (origPin) ;
     else if (mode == PWM_TONE_OUTPUT)
     {
       pinMode (origPin, PWM_OUTPUT) ;	// Call myself to enable PWM mode
-      pwmSetMode (PWM_MODE_MS) ;
+      //pwmSetMode (PWM_MODE_MS) ;
     }
     else if (mode == PWM_OUTPUT)
     {
@@ -1475,9 +1477,9 @@ void pinMode (int pin, int mode)
       *(gpio + fSel) = (*(gpio + fSel) & ~(7 << shift)) | (alt << shift) ;
       delayMicroseconds (110) ;		// See comments in pwmSetClockWPi
 
-      pwmSetMode  (PWM_MODE_BAL) ;	// Pi default mode
-      pwmSetRange (1024) ;		// Default range of 1024
-      pwmSetClock (32) ;		// 19.2 / 32 = 600KHz - Also starts the PWM
+      //pwmSetMode  (PWM_MODE_BAL) ;	// Pi default mode
+      //pwmSetRange (1024) ;		// Default range of 1024
+      //pwmSetClock (32) ;		// 19.2 / 32 = 600KHz - Also starts the PWM
     }
     else if (mode == GPIO_CLOCK)
     {
@@ -1961,21 +1963,17 @@ int waitForInterrupt (int pin, int mS)
  *********************************************************************************
  */
 
-static void *interruptHandler (UNU void *arg)
+/*static void *interruptHandler (UNU void *arg)
 {
   int myPin ;
-
-  (void)piHiPri (55) ;	// Only effective if we run as root
-
+  //(void)piHiPri (55) ;	// Only effective if we run as root
   myPin   = pinPass ;
   pinPass = -1 ;
-
   for (;;)
     if (waitForInterrupt (myPin, -1) > 0)
       isrFunctions [myPin] () ;
-
   return NULL ;
-}
+}*/
 
 
 /*
@@ -1988,7 +1986,7 @@ static void *interruptHandler (UNU void *arg)
 
 int wiringPiISR (int pin, int mode, void (*function)(void))
 {
-  pthread_t threadId ;
+  //pthread_t threadId ;
   const char *modeS ;
   char fName   [64] ;
   char  pinS [8] ;
@@ -2068,7 +2066,7 @@ int wiringPiISR (int pin, int mode, void (*function)(void))
 
   pthread_mutex_lock (&pinMutex) ;
     pinPass = pin ;
-    pthread_create (&threadId, NULL, interruptHandler, NULL) ;
+    //pthread_create (&threadId, NULL, interruptHandler, NULL) ;
     while (pinPass != -1)
       delay (1) ;
   pthread_mutex_unlock (&pinMutex) ;
@@ -2229,11 +2227,11 @@ unsigned int micros (void)
  *********************************************************************************
  */
 
-void wiringPiVersion (int *major, int *minor)
+/*void wiringPiVersion (int *major, int *minor)
 {
   *major = VERSION_MAJOR ;
   *minor = VERSION_MINOR ;
-}
+}*/
 
 
 /*
@@ -2251,6 +2249,10 @@ int wiringPiSetup (void)
 {
   int   fd ;
   int   model, rev, mem, maker, overVolted ;
+
+// It's actually a fatal error to call any of the wiringPiSetup routines more than once,
+//	(you run out of file handles!) but I'm fed-up with the useless twats who email
+//	me bleating that there is a bug in my code, so screw-em.
 
   if (wiringPiSetuped)
     return 0 ;
@@ -2286,7 +2288,7 @@ int wiringPiSetup (void)
      pinToGpio =  pinToGpioR1 ;
     physToGpio = physToGpioR1 ;
   }
-  else 					// A2, B2, A+, B+, CM, Pi2, Pi3, Zero, Zero W, Zero 2 W
+  else 					// A2, B2, A+, B+, CM, Pi2, Pi3, Zero
   {
      pinToGpio =  pinToGpioR2 ;
     physToGpio = physToGpioR2 ;

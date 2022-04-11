@@ -15,11 +15,9 @@ all: $(TARGET)
 default: $(TARGET)
 
 $(TARGET): $(OBJFILES)
-        $(CC) $(CFLAGS) $(LDFLAGS) -o $(TARGET) $(OBJFILES)
-
-
+		$(CC) $(CFLAGS) $(LDFLAGS) -o $(TARGET) $(OBJFILES)
 
 .PHONY: clean
 
 clean:
-        rm -f *.o $(TARGET)
+		rm -f *.o $(TARGET)

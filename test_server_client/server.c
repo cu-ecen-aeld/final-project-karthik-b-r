@@ -1,5 +1,5 @@
 /*Reference: https://www.geeksforgeeks.org/tcp-server-client-implementation-in-c*/
-
+/*code has been modified to read sensor data over the socket*/
 #include <stdio.h>
 #include <netdb.h>
 #include <netinet/in.h>
@@ -8,7 +8,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
-#define MAX 80
+#define MAX 10000
 #define PORT 8080
 #define SA struct sockaddr
 

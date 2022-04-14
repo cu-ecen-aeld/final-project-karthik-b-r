@@ -7,36 +7,88 @@
 #include <string.h>
 #include <sys/socket.h>
 #include <unistd.h>
-#include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <fcntl.h>
+#include <sys/ioctl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <errno.h>
+#include <linux/i2c-dev.h>
+#include <linux/i2c.h>
 
 #define MAX 10000
 #define PORT 8080
 #define SA struct sockaddr
-void func(int sockfd)
+#define I2C_DEV_PATH   ("/dev/i2c-1")
+#define INTERVAL       (3000000)
+#define DEVICE_ADDRESS (0x5A)
+#define ROOM_TEMP      (0x06)     // To sense room temperature
+#define OBJECT_TEMP    (0x07)     // To sense object temperature
+
+#ifndef I2C_SMBUS_READ 
+#define I2C_SMBUS_READ 1 
+#endif 
+#ifndef I2C_SMBUS_WRITE 
+#define I2C_SMBUS_WRITE 0 
+#endif
+
+typedef union i2c_smbus_data i2c_data;
+
+void func(int sockfd, int fdev)
 {
-	char buff[MAX];
+	char strBuf[MAX];
 	int n;
- 
-        int fd = open("/var/tmp/sensorLog.txt", O_RDONLY, 0644);
 
-	bzero(buff, sizeof(buff));
+	bzero(strBuf, sizeof(strBuf));
 
-	int readRetVal = read(fd, buff, MAX);
+        // trying to read something from the device unsing SMBus READ request
+        i2c_data data;
+	
+        char command = ROOM_TEMP; // command 0x06 is reading thermopile sensor, 0x07 is for reading IR sensor	
 
-        if(readRetVal < 0)
-	{
-	   printf("sensorlog file read error\n");
-	}
+	struct i2c_smbus_ioctl_data sdat =
+        {
+	   .read_write = I2C_SMBUS_READ,
+	   .command = command,
+	   .size = I2C_SMBUS_WORD_DATA,
+           .data = &data
+        };
 
-	int writeRetVal = write(sockfd, buff, readRetVal);
+        while(1)
+        {
+
+            // do actual request
+            if (ioctl(fdev, I2C_SMBUS, &sdat) < 0)
+            {
+               fprintf(stderr, "Failed to perform I2C_SMBUS transaction, error: %s\n", strerror(errno));
+            }
+
+            // calculate temperature in Celsius by formula from datasheet
+            double temp = (double) data.word;
+            temp = (temp * 0.02)-0.01;
+            temp = temp - 273.15;
+
+            // print result
+            printf("Room Temperature = %04.2f\n", temp);
+            int sprintfRetVal = sprintf(strBuf, "Room temperature = %04.2f\n", temp);
+
+            int retVal = write(sockfd, strBuf, sprintfRetVal);
+
+       	    if(retVal < 0)
+	    {
+	       printf("file write failed\n");
+	    }
+
+	    usleep(INTERVAL);
+        }
+
+	/*int writeRetVal = write(sockfd, buff, readRetVal);
 
 	if(writeRetVal < 0)
 	{
 	   printf("write to socket failed\n");
-	}
+	}*/
 
 
 	//for (;;) 
@@ -92,8 +144,36 @@ int main(int argc, char* argv[])
 	else
 		printf("connected to the server..\n");
 
+        
+	/*to initialise I2C for temp and humidity sensors*/
+
+	//open i2c bus
+	int fdev = open(I2C_DEV_PATH, O_RDWR);
+
+        if(fdev < 0)
+	{
+		fprintf(stderr, "Failed to open I2C interfcae %s Error: %s\n", I2C_DEV_PATH, strerror(errno));
+		return -1;
+	}
+
+	unsigned char i2c_addr = DEVICE_ADDRESS;
+
+	//set slave device address, MLX's address is 0x5A
+	if(ioctl(fdev, I2C_SLAVE, i2c_addr) < 0)
+	{
+		fprintf(stderr, "Failed to select I2C slave device, Error: %s\n", strerror(errno));
+		return -1;
+	}
+
+	//to enable checksums control
+	if(ioctl(fdev, I2C_PEC, 1) < 0)
+	{
+		fprintf(stderr, "Failed to enable SMBus packet error checking, error:%s\n", strerror(errno));
+		return -1;
+	}
+
 	// function for chat
-	func(sockfd);
+	func(sockfd, fdev);
 
 	// close the socket
 	close(sockfd);

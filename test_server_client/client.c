@@ -1,7 +1,7 @@
 /*reference: https://www.geeksforgeeks.org/tcp-server-client-implementation-in-c */
 /*Code has been modified in order to send sensor data to server over socket - Author - Ananth Deshpande*/
 
-#if 0
+
 #include <netdb.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -49,6 +49,16 @@ void initHumidity(int fdev)
 
 void readHumidity(int fdev)
 {
+    //Hold master mode for measuring humidity
+      buf[0] = 0xE5;
+   int retval=write(fdev, buf, 1);
+   if (retval < 0)
+    {
+      printf ("\n\rError in writing (Soft reset).");
+    }
+
+  // 2 sec delay before performing read operation
+      sleep (2);
 // device response, 14-bit ADC value:
 //  first 8 bit part ACK  second 8 bit part        CRC
 // [0 1 2 3 4 5 6 7] [8] [9 10 11 12 13 14 15 16] [17 18 19 20 21 22 23 24]
@@ -57,7 +67,7 @@ void readHumidity(int fdev)
 
    uint8_t buf2[3] = { 0 };
 
-   int retval=read(fdev, buf2, 3);
+   retval=read(fdev, buf2, 3);
    if (retval < 0)
     {
       printf ("\n\rError in reading.");
@@ -252,7 +262,7 @@ int main(int argc, char* argv[])
 	// function for sending the sensor data over socket
 	func(sockfd, tempfdev, humidityfdev);
 }
-#endif
+#if 0
 
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -356,3 +366,4 @@ double result = (-6.0 + 125.0 / 65536 * (double) sensor_data);
 
   }
 }
+#endif

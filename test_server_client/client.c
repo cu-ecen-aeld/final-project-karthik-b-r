@@ -47,9 +47,10 @@ void initHumidity(int fdev)
     }
 }   
 
-void readHumidity(int fdev)
+void readHumidity(int fdev, int sockfd)
 {
     //Hold master mode for measuring humidity
+    char strBuf[MAX];
       buf[0] = 0xE5;
    int retval=write(fdev, buf, 1);
    if (retval < 0)
@@ -99,6 +100,16 @@ void readHumidity(int fdev)
 double result = (-6.0 + 125.0 / 65536 * (double) sensor_data);
 
       printf ("Humidity: %.2f %%\n", result);
+
+      int sprintfRetVal = sprintf(strBuf, "Humidity = %.2f\n", result);
+
+      int retVal = write(sockfd, strBuf, sprintfRetVal);
+
+      if(retVal < 0)
+      {
+	 printf("file write failed\n");
+      }      
+
       sleep (1);
 }
 
@@ -128,7 +139,7 @@ void func(int sockfd, int tempfdev, int humidityfdev)
         {
 
             // do actual request
-            /*if (ioctl(tempfdev, I2C_SMBUS, &sdat) < 0)
+            if (ioctl(tempfdev, I2C_SMBUS, &sdat) < 0)
             {
                fprintf(stderr, "Failed to perform I2C_SMBUS transaction, error: %s\n", strerror(errno));
             }
@@ -147,11 +158,11 @@ void func(int sockfd, int tempfdev, int humidityfdev)
        	    if(retVal < 0)
 	    {
 	       printf("file write failed\n");
-	    }*/
+	    }
 
 	    usleep(INTERVAL);
 
-	    readHumidity(humidityfdev);
+	    readHumidity(humidityfdev, sockfd);
         }
 
 	/*int writeRetVal = write(sockfd, buff, readRetVal);

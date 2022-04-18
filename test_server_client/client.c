@@ -81,14 +81,15 @@ void readHumidity(int fdev, int sockfd)
 
     usleep (4000);
 
-    uint16_t sensor_data = 0;
     /*observe the above device response comment*/
-    sensor_data = (buf[0] << 8 + buf[1]) & 0xFFFC;
-    double sensor_temp = sensor_data / 65536.0;
+    uint16_t sensor_data = 0;
+    sensor_data = buf[0] << 8;
+    sensor_data += buf[1];
+    sensor_data &= ~0x003;
 
-    double result = -6.0 + (125.0 * sensor_temp);
+    double result = (-6.0 + 125.0 / 65536 * (double) sensor_data);
 
-    printf ("Humidity is : %.2f %%\n", result);
+    printf("humidity is: %.2f %%, data = %d\n", result, sensor_data);
 
     int sprintfRetVal = sprintf(strBuf, "Humidity = %.2f %%\n", result);
 

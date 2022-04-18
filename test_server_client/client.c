@@ -84,6 +84,7 @@ void readHumidity(int fdev, int sockfd)
     uint16_t sensor_data = 0;
     /*observe the above device response comment*/
     sensor_data = (buf[0] << 8 + buf[1]) & 0xFFFC;
+
     double sensor_temp = sensor_data / 65536.0;
 
     double result = -6.0 + (125.0 * sensor_temp);

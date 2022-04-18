@@ -81,19 +81,19 @@ void lcd_init()
 }
 
 
-void lcd_print1(char *msg)) 
+void lcd_print1(char *msg) 
 {
 	SetCmdMode();
+	lcd_byte(0x28);
+	lcd_byte(0xC0);
 	lcd_byte(0x01);
-	lcd_byte(0x02);
-	lcd_byte(0x80);
 	delay(3);
 	SetChrMode(); 
 	lcd_text(msg);
-	delay(1000);
+//	delay(1000);
 }
 
-void lcd_print2(char *msg)) 
+void lcd_print2(char *msg)
 {
 	SetCmdMode();
 	lcd_byte(0x01);
@@ -105,7 +105,7 @@ void lcd_print2(char *msg))
 	delay(1000);
 }
 
-int main (int argc, char *argv [])
+/*int main (int argc, char *argv [])
 {
   lcd_init();
 
@@ -113,9 +113,10 @@ int main (int argc, char *argv [])
   if (argc>1)
      lcd_text(argv[1]);
   else
+    {
      lcd_print1("hello world!");
      lcd_print2("hello line2!");
- 
+    }
 
   return 0 ;
-}
+}*/

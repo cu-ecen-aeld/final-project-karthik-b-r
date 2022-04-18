@@ -5,7 +5,8 @@ ifeq ($(CC),)
 endif
 
 ifeq ($(CFLAGS),)
-        CFLAGS = -Wall -Werror -g
+#        CFLAGS = -Wall -Werror -g
+         CFLAGS = -g
 endif
 
 ifeq ($(LDFLAGS),)
@@ -13,16 +14,14 @@ ifeq ($(LDFLAGS),)
 endif
 
 TARGET = server_display
-OBJFILES = wiringPi lcd server_display
+OBJFILES = wiringPi.o lcd.o server_display.o
 
 all: $(TARGET)
 default: $(TARGET)
 
-$(TARGET): $(OBJFILES).o
-		$(CC) $(CFLAGS) $(LDFLAGS) -o $(TARGET) $(OBJFILES).o
+$(TARGET): $(OBJFILES)
+		$(CC) $(CFLAGS) $(LDFLAGS) -o $(TARGET) $(OBJFILES)
 		
-$(OBJFILES).o: $(OBJFILES).c 		
-		$(CC) $(CFLAGS) -c $(OBJFILES)
 
 .PHONY: clean
 

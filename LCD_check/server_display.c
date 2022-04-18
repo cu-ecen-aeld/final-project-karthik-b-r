@@ -18,24 +18,26 @@
 void func(int connfd)
 {
 	char buff[MAX];
-	int n;
-	static int line_count=0;
+//	int n;
+//	static int line_count=0;
+        lcd_init();
 	// infinite loop for chat
 	for (;;) {
-		bzero(buff, MAX);
+//		bzero(buff, MAX);
 
 		// read the message from client and copy it in buffer
 		read(connfd, buff, sizeof(buff));
-		if (line_count == 0)
-		{
+//		if (line_count == 0)
+//		{
+                       // SetChrMode(); 
 			lcd_print1(buff);
-			line_count=1;
-		}
-		else
-		{
-			lcd_print2(buff);
-			line_count=0;
-		}
+//			line_count=1;
+//		}
+//		else
+//		{
+//			lcd_print2(buff);
+//			line_count=0;
+//		}
 	
 		// print buffer which contains the client contents
 		printf("From client: %s\t ", buff);

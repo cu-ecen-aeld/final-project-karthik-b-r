@@ -8,14 +8,21 @@ ifeq ($(CFLAGS),)
         CFLAGS = -Wall -Werror -g
 endif
 
-TARGET = lcd
-OBJFILES = wiringPi.o lcd.o
+ifeq ($(LDFLAGS),)
+	LDFLAGS = -pthread -lrt
+endif
+
+TARGET = server_display
+OBJFILES = wiringPi lcd server_display
 
 all: $(TARGET)
 default: $(TARGET)
 
-$(TARGET): $(OBJFILES)
-		$(CC) $(CFLAGS) $(LDFLAGS) -o $(TARGET) $(OBJFILES)
+$(TARGET): $(OBJFILES).o
+		$(CC) $(CFLAGS) $(LDFLAGS) -o $(TARGET) $(OBJFILES).o
+		
+$(OBJFILES).o: $(OBJFILES).c 		
+		$(CC) $(CFLAGS) -c $(OBJFILES)
 
 .PHONY: clean
 

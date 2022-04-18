@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "wiringPi.h"
+#include "lcd.h"
 
 #define LCD_E 24
 #define LCD_RS 25
@@ -79,6 +80,31 @@ void lcd_init()
    delay(3);        // clear screen is slow!
 }
 
+
+void lcd_print1(char *msg)) 
+{
+	SetCmdMode();
+	lcd_byte(0x01);
+	lcd_byte(0x02);
+	lcd_byte(0x80);
+	delay(3);
+	SetChrMode(); 
+	lcd_text(msg);
+	delay(1000);
+}
+
+void lcd_print2(char *msg)) 
+{
+	SetCmdMode();
+	lcd_byte(0x01);
+	lcd_byte(0x02);
+	lcd_byte(0xC0);
+	delay(3);
+	SetChrMode(); 
+	lcd_text(msg);
+	delay(1000);
+}
+
 int main (int argc, char *argv [])
 {
   lcd_init();
@@ -87,7 +113,9 @@ int main (int argc, char *argv [])
   if (argc>1)
      lcd_text(argv[1]);
   else
-     lcd_text("hello world!");
+     lcd_print1("hello world!");
+     lcd_print2("hello line2!");
+ 
 
   return 0 ;
 }

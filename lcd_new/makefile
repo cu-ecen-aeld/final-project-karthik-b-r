@@ -13,10 +13,10 @@ ifeq ($(LDFLAGS),)
 	LDFLAGS = -pthread -lrt
 endif
 
-#TARGET = server_display lcd
-TARGET = lcd
-#OBJFILES = wiringPi.o lcd.o server_display.o
-OBJFILES = wiringPi.o lcd.o 
+TARGET = server_display 
+#TARGET = lcd
+OBJFILES = wiringPi.o lcd.o server_display.o
+#OBJFILES = wiringPi.o lcd.o 
 
 
 all: $(TARGET)

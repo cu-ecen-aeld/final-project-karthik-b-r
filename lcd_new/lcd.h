@@ -9,7 +9,7 @@ void SetCmdMode();
 void SetChrMode();
 void lcd_text(char *s);
 void lcd_init();
-//void lcd_print1(char *msg);
-//void lcd_print2(char *msg);
-
+void lcd_print1(char *msg);
+void lcd_print2(char *msg);
+void printChar(char c,int addr);
 #endif

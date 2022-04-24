@@ -1,5 +1,7 @@
 /*Reference: https://www.geeksforgeeks.org/tcp-server-client-implementation-in-c*/
 /*code has been modified to read sensor data over the socket*/
+// 24th April
+
 #include <stdio.h>
 #include <netdb.h>
 #include <netinet/in.h>
@@ -28,7 +30,7 @@ void func(int connfd)
 {
 	char buff[MAX];
 //	int n;
-//	static int line_count=0;
+	static int line_count=0;
 //        lcd_init();
 	// infinite loop for chat
 	for (;;) {
@@ -36,24 +38,24 @@ void func(int connfd)
 	lcd_init();
 		// read the message from client and copy it in buffer
 	read(connfd, buff, sizeof(buff));
-        char *p = buff;
-        int i = 0;
-        printf("before lcd,  value at p = %c\n", *p);
-        while (*p != '\0')
-        {
-          printChar(*p, lcdAddr[i]);
-          i++;
-          p++;
-          if(63 == i)
-             i = 0;
-        }
-        printf("after lcd:value  = %d\n", i);
-        sleep(2);
+//        char *p = buff;
+//        int i = 0;
+//        printf("before lcd,  value at p = %c\n", *p);
+//        while (*p != '\0')
+//        {
+//          printChar(*p, lcdAddr[i]);
+//          i++;
+//          p++;
+//          if(63 == i)
+//             i = 0;
+//       }
+//        printf("after lcd:value  = %d\n", i);
+//        sleep(2);
 //	SetCmdMode();
 //	lcd_byte(0x01);
 //	lcd_byte(0x80);
 
-/*		if (line_count == 0)
+		if (line_count == 0)
 		{
                        // SetChrMode(); 
 			lcd_print1(buff);
@@ -61,10 +63,11 @@ void func(int connfd)
 		}
 		else
 		{
-			lcd_print2(buff);
+			lcd_print1(buff);
 			line_count=0;
 		}
-*/	
+		sleep(1);
+	
 		// print buffer which contains the client contents
 		printf(" %s\t ", buff);
 		bzero(buff, MAX);
